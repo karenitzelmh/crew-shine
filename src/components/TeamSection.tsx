@@ -11,22 +11,24 @@ interface TeamSectionProps {
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, teamId: string) => void;
   onEmployeeClick: (employee: Employee) => void;
+  onStatusChange?: (employee: Employee, next: Employee["status"]) => void;
 }
 
-export const TeamSection = ({ 
-  team, 
-  employees, 
-  onDragStart, 
-  onDragOver, 
-  onDrop, 
-  onEmployeeClick 
+export const TeamSection = ({
+  team,
+  employees,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onEmployeeClick,
+  onStatusChange,
 }: TeamSectionProps) => {
   const handleDrop = (e: React.DragEvent) => {
     onDrop(e, team.id);
   };
 
   return (
-    <Card 
+    <Card
       className="bg-gradient-card shadow-card border-0 animate-slide-in"
       onDragOver={onDragOver}
       onDrop={handleDrop}
@@ -34,8 +36,8 @@ export const TeamSection = ({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold text-foreground flex items-center">
-            <div 
-              className="w-3 h-3 rounded-full mr-2" 
+            <div
+              className="w-3 h-3 rounded-full mr-2"
               style={{ backgroundColor: team.color }}
             />
             {team.name}
@@ -56,9 +58,10 @@ export const TeamSection = ({
           employees.map((employee) => (
             <EmployeeCard
               key={employee.id}
-              employee={employee}
+              e={employee} // 🔹 ahora coincide con la prop del EmployeeCard.tsx
               onDragStart={onDragStart}
               onClick={onEmployeeClick}
+              onStatusChange={onStatusChange}
             />
           ))
         )}

@@ -20,7 +20,7 @@ const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedTeam, setSelectedTeam] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [selectedLevel, setSelectedLevel] = useState("all"); // 👈 nuevo
+  const [selectedLevel, setSelectedLevel] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
@@ -44,6 +44,7 @@ const Index = () => {
         "postgres_changes",
         { event: "*", schema: "public", table: "employees" },
         async () => {
+          if (!mounted) return;
           const data = await fetchEmployees();
           if (mounted) setEmployees(data);
         }
@@ -69,7 +70,7 @@ const Index = () => {
     return names.map((name, i) => ({ id: name, name, color: palette[i % palette.length] }));
   }, [employees]);
 
-  // 🔢 Levels y conteos por nivel
+  // Levels y conteos por nivel
   const levels = useMemo(() => {
     return Array.from(
       new Set(
@@ -119,7 +120,7 @@ const Index = () => {
     });
   }, [employees, selectedTeam, selectedStatus, selectedLevel, searchTerm]);
 
-  // Group by team
+  // Agrupar por team
   const employeesByTeam = useMemo(() => {
     const groups: Record<string, Employee[]> = {};
     teams.forEach((team) => {
@@ -192,7 +193,7 @@ const Index = () => {
           onSearchChange={setSearchTerm}
         />
 
-        {/* NEW: Levelling filter + chips con conteos */}
+        {/* Levelling filter + chips */}
         <div className="mt-4 bg-white/60 rounded-xl p-4 shadow-sm border">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -225,7 +226,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Teams (each section has a horizontal list) */}
+        {/* Teams */}
         <div className="grid gap-6 mt-6">
           {teams.map((team) => (
             <TeamSection
@@ -252,7 +253,7 @@ const Index = () => {
                 <li>• <strong>Click card:</strong> Cycle status (Active → Pending → Hiring → Backfill)</li>
                 <li>• <strong>Dropdown menu:</strong> Set a specific status</li>
                 <li>• <strong>Filters:</strong> Search by name or role</li>
-                <li>• <strong>Levelling:</strong> Filter by M1/M2/M3… y ver conteos</li>
+                <li>• <strong>Levelling:</strong> Filter by M1/M2/M3… and see counts</li>
               </ul>
             </div>
           </div>
@@ -263,3 +264,4 @@ const Index = () => {
 };
 
 export default Index;
+

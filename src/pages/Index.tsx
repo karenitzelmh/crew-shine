@@ -1,3 +1,4 @@
+// src/pages/Index.tsx
 import { useEffect, useMemo, useState } from "react";
 import { Employee, Team, EmployeeStats } from "@/types/employee";
 import { StatsCards } from "@/components/StatsCards";
@@ -5,15 +6,14 @@ import { FilterBar } from "@/components/FilterBar";
 import { TeamSection } from "@/components/TeamSection";
 import { AddEmployeeDialog } from "@/components/AddEmployeeDialog";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Users2 } from "lucide-react"; // 👈 cambio aquí
+import { Building2, Users2 } from "lucide-react";
+import { loadEmployees } from "@/data/loadEmployees";
 
-import { supabase } from "@/lib/supabase";
-import {
-  fetchEmployees,
-  addEmployee,
-  updateEmployeeStatus,
-  updateEmployeeTeam,
-} from "@/services/employees";
+// ID simple para nuevos empleados (local, sin backend)
+const genId = (name: string, team: string) =>
+  `${(name || "emp").trim().toLowerCase().replace(/\s+/g, "-")}-${(team || "team")
+    .trim()
+    .toLowerCase()}-${Date.now().toString(36).slice(4)}${Math.random().toString(36).slice(2, 6)}`;
 
 const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -22,35 +22,19 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
-  // Load data + Realtime
+  // Carga desde CSV (src/data/employees.csv)
   useEffect(() => {
     let mounted = true;
-
-    const load = async () => {
+    (async () => {
       try {
-        const data = await fetchEmployees();
+        const data = await loadEmployees();
         if (mounted) setEmployees(data);
       } catch (e) {
         console.error(e);
       }
-    };
-    load();
-
-    const channel = supabase
-      .channel("realtime-employees")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "employees" },
-        async () => {
-          const data = await fetchEmployees();
-          if (mounted) setEmployees(data);
-        }
-      )
-      .subscribe();
-
+    })();
     return () => {
       mounted = false;
-      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -77,7 +61,7 @@ const Index = () => {
     return { total, active, pending, hiring, backfill, byTeam };
   }, [employees, teams]);
 
-  // Filters
+  // Filtros
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
       const okTeam = selectedTeam === "all" || employee.team === selectedTeam;
@@ -89,7 +73,7 @@ const Index = () => {
     });
   }, [employees, selectedTeam, selectedStatus, searchTerm]);
 
-  // Group by team
+  // Agrupar por team
   const employeesByTeam = useMemo(() => {
     const groups: Record<string, Employee[]> = {};
     teams.forEach((team) => {
@@ -98,22 +82,25 @@ const Index = () => {
     return groups;
   }, [filteredEmployees, teams]);
 
-  // Handlers (DB first; realtime updates everyone)
+  // --- Handlers (todo local; sin backend) ---
+
   const handleAddEmployee = async (newEmployee: Omit<Employee, "id">) => {
-    await addEmployee(newEmployee);
+    const withId: Employee = { ...newEmployee, id: genId(newEmployee.name, newEmployee.team) };
+    setEmployees((prev) => [...prev, withId]);
     toast({ title: "Employee added", description: `${newEmployee.name} joined the org` });
   };
 
-  const handleStatusChange = async (emp: Employee, next: Employee["status"]) => {
-    await updateEmployeeStatus(emp.id, next);
-    toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
+  const handleStatusChange = async (id: string, next: Employee["status"]) => {
+    setEmployees((prev) => prev.map((e) => (e.id === id ? { ...e, status: next } : e)));
+    const emp = employees.find((e) => e.id === id);
+    if (emp) toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
   };
 
   // Click to cycle: Active → Pending → Hiring → Backfill → Active
   const handleEmployeeClick = async (employee: Employee) => {
     const order: Employee["status"][] = ["Active", "Pending", "Hiring", "Backfill"];
     const next = order[(order.indexOf(employee.status) + 1) % order.length];
-    await handleStatusChange(employee, next);
+    await handleStatusChange(employee.id, next);
   };
 
   const handleDragStart = (e: React.DragEvent, employee: Employee) => {
@@ -126,7 +113,9 @@ const Index = () => {
     e.preventDefault();
     const employeeData: Employee = JSON.parse(e.dataTransfer.getData("application/json"));
     if (employeeData.team !== newTeamId) {
-      await updateEmployeeTeam(employeeData.id, newTeamId);
+      setEmployees((prev) =>
+        prev.map((emp) => (emp.id === employeeData.id ? { ...emp, team: newTeamId } : emp))
+      );
       toast({ title: "Employee moved", description: `${employeeData.name} → ${newTeamId}` });
     }
   };
@@ -138,7 +127,7 @@ const Index = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-gradient-primary rounded-lg">
-              <Building2 className="h-8 w-8 text-primary-foreground" /> {/* 👈 cambio aquí */}
+              <Building2 className="h-8 w-8 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-foreground">Headcount Dashboard</h1>
@@ -162,7 +151,7 @@ const Index = () => {
           onSearchChange={setSearchTerm}
         />
 
-        {/* Teams (each section has a horizontal list) */}
+        {/* Teams */}
         <div className="grid gap-6">
           {teams.map((team) => (
             <TeamSection
@@ -173,7 +162,7 @@ const Index = () => {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onEmployeeClick={handleEmployeeClick}
-              onStatusChange={handleStatusChange}
+              onStatusChange={(emp, next) => handleStatusChange(emp.id, next)}
             />
           ))}
         </div>
@@ -196,6 +185,10 @@ const Index = () => {
       </div>
     </div>
   );
+};
+
+export default Index;
+
 };
 
 export default Index;

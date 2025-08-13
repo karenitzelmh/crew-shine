@@ -1,6 +1,6 @@
 import { EmployeeStats } from "@/types/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, UserX, Clock } from "lucide-react";
+import { Users, UserCheck, Clock, UserPlus, RefreshCcw } from "lucide-react";
 
 interface StatsCardsProps {
   stats: EmployeeStats;
@@ -9,49 +9,60 @@ interface StatsCardsProps {
 export const StatsCards = ({ stats }: StatsCardsProps) => {
   const statItems = [
     {
-      title: "Total Empleados",
+      title: "Total Employees",
       value: stats.total,
       icon: Users,
-      color: "text-primary",
-      bgColor: "bg-primary/10"
+      colorClass: "text-[hsl(var(--primary))]",
+      bgClass: "bg-[hsl(var(--primary)/0.10)]",
     },
     {
-      title: "Activos",
+      title: "Active",
       value: stats.active,
       icon: UserCheck,
-      color: "text-success",
-      bgColor: "bg-success/10"
+      colorClass: "text-[hsl(var(--success))]",
+      bgClass: "bg-[hsl(var(--success)/0.12)]",
     },
     {
-      title: "Pendientes",
+      title: "Pending",
       value: stats.pending,
       icon: Clock,
-      color: "text-warning",
-      bgColor: "bg-warning/10"
+      colorClass: "text-[hsl(var(--warning))]",
+      bgClass: "bg-[hsl(var(--warning)/0.12)]",
     },
     {
       title: "Hiring",
       value: stats.hiring,
-      icon: UserX,
-      color: "text-hiring",
-      bgColor: "bg-hiring/10"
-    }
+      icon: UserPlus,
+      colorClass: "text-[hsl(var(--primary))]",
+      bgClass: "bg-[hsl(var(--primary)/0.10)]",
+    },
+    {
+      title: "Backfill",
+      value: stats.backfill,
+      icon: RefreshCcw,
+      colorClass: "text-[hsl(var(--primary))]",
+      bgClass: "bg-[hsl(var(--primary)/0.10)]",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
       {statItems.map((item, index) => (
-        <Card key={item.title} className="bg-gradient-card shadow-card border-0 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+        <Card
+          key={item.title}
+          className="bg-gradient-card shadow-card border-0 animate-fade-in"
+          style={{ animationDelay: `${index * 0.08}s` }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {item.title}
             </CardTitle>
-            <div className={`p-2 rounded-full ${item.bgColor}`}>
-              <item.icon className={`h-4 w-4 ${item.color}`} />
+            <div className={`p-2 rounded-full ${item.bgClass}`}>
+              <item.icon className={`h-4 w-4 ${item.colorClass}`} />
             </div>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${item.color}`}>
+            <div className={`text-2xl font-bold ${item.colorClass}`}>
               {item.value}
             </div>
           </CardContent>

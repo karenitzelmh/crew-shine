@@ -11,9 +11,9 @@ interface EmployeeCardProps {
 }
 
 const statusColors = {
-  active: "success",
-  pending: "warning", 
-  inactive: "inactive"
+  Activo: "success",
+  Pending: "warning", 
+  Hiring: "hiring"
 } as const;
 
 export const EmployeeCard = ({ employee, onDragStart, onClick }: EmployeeCardProps) => {
@@ -46,9 +46,9 @@ export const EmployeeCard = ({ employee, onDragStart, onClick }: EmployeeCardPro
                 variant="secondary" 
                 className={`
                   text-xs font-medium
-                  ${employee.status === 'active' ? 'bg-success text-success-foreground' : ''}
-                  ${employee.status === 'pending' ? 'bg-warning text-warning-foreground' : ''}
-                  ${employee.status === 'inactive' ? 'bg-inactive text-inactive-foreground' : ''}
+                  ${employee.status === 'Activo' ? 'bg-success text-success-foreground' : ''}
+                  ${employee.status === 'Pending' ? 'bg-warning text-warning-foreground' : ''}
+                  ${employee.status === 'Hiring' ? 'bg-hiring text-hiring-foreground' : ''}
                 `}
               >
                 {employee.status}

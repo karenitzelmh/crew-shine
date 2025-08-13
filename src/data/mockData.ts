@@ -14,7 +14,7 @@ export const mockEmployees: Employee[] = [
     name: "Ana García",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
     team: "desarrollo",
-    status: "active",
+    status: "Activo",
     position: "Desarrolladora Frontend",
     startDate: "2023-01-15",
     email: "ana.garcia@empresa.com"
@@ -24,7 +24,7 @@ export const mockEmployees: Employee[] = [
     name: "Carlos Rodríguez",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
     team: "desarrollo",
-    status: "active",
+    status: "Activo",
     position: "Desarrollador Backend",
     startDate: "2022-11-03",
     email: "carlos.rodriguez@empresa.com"
@@ -34,7 +34,7 @@ export const mockEmployees: Employee[] = [
     name: "María López",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
     team: "diseno",
-    status: "active",
+    status: "Activo",
     position: "Diseñadora UX/UI",
     startDate: "2023-03-10",
     email: "maria.lopez@empresa.com"
@@ -44,7 +44,7 @@ export const mockEmployees: Employee[] = [
     name: "Juan Martínez",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juan",
     team: "marketing",
-    status: "pending",
+    status: "Pending",
     position: "Especialista en Marketing Digital",
     startDate: "2024-01-08",
     email: "juan.martinez@empresa.com"
@@ -54,7 +54,7 @@ export const mockEmployees: Employee[] = [
     name: "Laura Sánchez",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Laura",
     team: "ventas",
-    status: "active",
+    status: "Activo",
     position: "Gerente de Ventas",
     startDate: "2021-09-20",
     email: "laura.sanchez@empresa.com"
@@ -64,7 +64,7 @@ export const mockEmployees: Employee[] = [
     name: "David Torres",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
     team: "desarrollo",
-    status: "inactive",
+    status: "Hiring",
     position: "DevOps Engineer",
     startDate: "2022-06-12",
     email: "david.torres@empresa.com"
@@ -74,7 +74,7 @@ export const mockEmployees: Employee[] = [
     name: "Elena Ruiz",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena",
     team: "rrhh",
-    status: "active",
+    status: "Activo",
     position: "Especialista en RRHH",
     startDate: "2023-02-28",
     email: "elena.ruiz@empresa.com"
@@ -84,7 +84,7 @@ export const mockEmployees: Employee[] = [
     name: "Roberto Jiménez",
     photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto",
     team: "diseno",
-    status: "pending",
+    status: "Pending",
     position: "Diseñador Gráfico",
     startDate: "2024-01-15",
     email: "roberto.jimenez@empresa.com"

@@ -70,9 +70,9 @@ export const FilterBar = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los estatus</SelectItem>
-              <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="pending">Pendientes</SelectItem>
-              <SelectItem value="inactive">Inactivos</SelectItem>
+              <SelectItem value="Activo">Activos</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Hiring">Hiring</SelectItem>
             </SelectContent>
           </Select>
         </div>

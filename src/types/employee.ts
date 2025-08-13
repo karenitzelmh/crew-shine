@@ -3,7 +3,7 @@ export interface Employee {
   name: string;
   photo: string;
   team: string;
-  status: 'active' | 'pending' | 'inactive';
+  status: 'Activo' | 'Pending' | 'Hiring';
   position: string;
   startDate: string;
   email: string;
@@ -19,6 +19,6 @@ export interface EmployeeStats {
   total: number;
   active: number;
   pending: number;
-  inactive: number;
+  hiring: number;
   byTeam: Record<string, number>;
 }

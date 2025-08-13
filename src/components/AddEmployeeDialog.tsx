@@ -19,7 +19,7 @@ export const AddEmployeeDialog = ({ teams, onAddEmployee }: AddEmployeeDialogPro
     email: '',
     position: '',
     team: '',
-    status: 'active' as const,
+    status: 'Activo' as const,
     photo: '',
     startDate: new Date().toISOString().split('T')[0]
   });
@@ -36,7 +36,7 @@ export const AddEmployeeDialog = ({ teams, onAddEmployee }: AddEmployeeDialogPro
         email: '',
         position: '',
         team: '',
-        status: 'active',
+        status: 'Activo',
         photo: '',
         startDate: new Date().toISOString().split('T')[0]
       });
@@ -113,9 +113,9 @@ export const AddEmployeeDialog = ({ teams, onAddEmployee }: AddEmployeeDialogPro
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Activo</SelectItem>
-                <SelectItem value="pending">Pendiente</SelectItem>
-                <SelectItem value="inactive">Inactivo</SelectItem>
+                <SelectItem value="Activo">Activo</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Hiring">Hiring</SelectItem>
               </SelectContent>
             </Select>
           </div>

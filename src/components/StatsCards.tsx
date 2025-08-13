@@ -30,11 +30,11 @@ export const StatsCards = ({ stats }: StatsCardsProps) => {
       bgColor: "bg-warning/10"
     },
     {
-      title: "Inactivos",
-      value: stats.inactive,
+      title: "Hiring",
+      value: stats.hiring,
       icon: UserX,
-      color: "text-inactive",
-      bgColor: "bg-inactive/10"
+      color: "text-hiring",
+      bgColor: "bg-hiring/10"
     }
   ];
 

@@ -18,16 +18,16 @@ const Index = () => {
   // Calculate statistics
   const stats: EmployeeStats = useMemo(() => {
     const total = employees.length;
-    const active = employees.filter(e => e.status === 'active').length;
-    const pending = employees.filter(e => e.status === 'pending').length;
-    const inactive = employees.filter(e => e.status === 'inactive').length;
+    const active = employees.filter(e => e.status === 'Activo').length;
+    const pending = employees.filter(e => e.status === 'Pending').length;
+    const hiring = employees.filter(e => e.status === 'Hiring').length;
     
     const byTeam: Record<string, number> = {};
     mockTeams.forEach(team => {
       byTeam[team.id] = employees.filter(e => e.team === team.id).length;
     });
 
-    return { total, active, pending, inactive, byTeam };
+    return { total, active, pending, hiring, byTeam };
   }, [employees]);
 
   // Filter employees
@@ -97,9 +97,9 @@ const Index = () => {
   // Handle employee click for status change
   const handleEmployeeClick = (employee: Employee) => {
     const statusCycle = {
-      'active': 'pending',
-      'pending': 'inactive', 
-      'inactive': 'active'
+      'Activo': 'Pending',
+      'Pending': 'Hiring', 
+      'Hiring': 'Activo'
     } as const;
     
     const newStatus = statusCycle[employee.status];

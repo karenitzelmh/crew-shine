@@ -5,7 +5,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { TeamSection } from "@/components/TeamSection";
 import { AddEmployeeDialog } from "@/components/AddEmployeeDialog";
 import { useToast } from "@/hooks/use-toast";
-import { BuildingIcon, Users2 } from "lucide-react";
+import { Building2, Users2 } from "lucide-react"; // 👈 cambio aquí
 
 import { supabase } from "@/lib/supabase";
 import {
@@ -138,7 +138,7 @@ const Index = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-gradient-primary rounded-lg">
-              <BuildingIcon className="h-8 w-8 text-primary-foreground" />
+              <Building2 className="h-8 w-8 text-primary-foreground" /> {/* 👈 cambio aquí */}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-foreground">Headcount Dashboard</h1>

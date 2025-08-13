@@ -1,5 +1,11 @@
 import { Team } from "@/types/employee";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search, Filter } from "lucide-react";
@@ -21,38 +27,40 @@ export const FilterBar = ({
   searchTerm,
   onTeamChange,
   onStatusChange,
-  onSearchChange
+  onSearchChange,
 }: FilterBarProps) => {
   return (
     <div className="bg-gradient-card rounded-lg p-4 shadow-card border-0 mb-6">
       <div className="flex items-center mb-4">
         <Filter className="h-5 w-5 text-primary mr-2" />
-        <h3 className="font-semibold text-foreground">Filtros</h3>
+        <h3 className="font-semibold text-foreground">Filters</h3>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Search */}
         <div className="space-y-2">
-          <Label htmlFor="search">Buscar empleado</Label>
+          <Label htmlFor="search">Search</Label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="search"
-              placeholder="Buscar por nombre..."
+              placeholder="Search by name or role…"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-10"
             />
           </div>
         </div>
-        
+
+        {/* Team */}
         <div className="space-y-2">
-          <Label htmlFor="team-filter">Equipo</Label>
+          <Label htmlFor="team-filter">Team</Label>
           <Select value={selectedTeam} onValueChange={onTeamChange}>
             <SelectTrigger id="team-filter">
-              <SelectValue placeholder="Todos los equipos" />
+              <SelectValue placeholder="All teams" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los equipos</SelectItem>
+              <SelectItem value="all">All teams</SelectItem>
               {teams.map((team) => (
                 <SelectItem key={team.id} value={team.id}>
                   {team.name}
@@ -61,18 +69,20 @@ export const FilterBar = ({
             </SelectContent>
           </Select>
         </div>
-        
+
+        {/* Status */}
         <div className="space-y-2">
-          <Label htmlFor="status-filter">Estatus</Label>
+          <Label htmlFor="status-filter">Status</Label>
           <Select value={selectedStatus} onValueChange={onStatusChange}>
             <SelectTrigger id="status-filter">
-              <SelectValue placeholder="Todos los estatus" />
+              <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los estatus</SelectItem>
-              <SelectItem value="Activo">Activos</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Hiring">Hiring</SelectItem>
+              <SelectItem value="Backfill">Backfill</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -80,3 +90,4 @@ export const FilterBar = ({
     </div>
   );
 };
+

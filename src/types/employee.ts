@@ -3,10 +3,9 @@ export interface Employee {
   name: string;
   photo: string;
   team: string;
-  status: 'Activo' | 'Pending' | 'Hiring';
+  status: 'Active' | 'Pending' | 'Hiring' | 'Backfill';
   position: string;
-  startDate: string;
-  email: string;
+  level: string; // e.g., "M2.IC4"
 }
 
 export interface Team {
@@ -20,5 +19,6 @@ export interface EmployeeStats {
   active: number;
   pending: number;
   hiring: number;
+  backfill: number;
   byTeam: Record<string, number>;
 }

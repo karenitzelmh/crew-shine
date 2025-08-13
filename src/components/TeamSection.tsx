@@ -48,22 +48,27 @@ export const TeamSection = ({
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+
+      {/* Horizontal list with snap scrolling */}
+      <CardContent>
         {employees.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No hay empleados en este equipo</p>
+            <p className="text-sm">No employees in this team</p>
           </div>
         ) : (
-          employees.map((employee) => (
-            <EmployeeCard
-              key={employee.id}
-              e={employee} // 🔹 ahora coincide con la prop del EmployeeCard.tsx
-              onDragStart={onDragStart}
-              onClick={onEmployeeClick}
-              onStatusChange={onStatusChange}
-            />
-          ))
+          <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
+            {employees.map((employee) => (
+              <div key={employee.id} className="snap-start">
+                <EmployeeCard
+                  e={employee}
+                  onDragStart={onDragStart}
+                  onClick={onEmployeeClick}
+                  onStatusChange={onStatusChange}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

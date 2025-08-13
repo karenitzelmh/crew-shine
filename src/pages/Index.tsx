@@ -7,43 +7,86 @@ import { TeamSection } from "@/components/TeamSection";
 import { AddEmployeeDialog } from "@/components/AddEmployeeDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Users2 } from "lucide-react";
-import { loadEmployees } from "@/data/loadEmployees";
 
-// ID simple para nuevos empleados (local, sin backend)
-const genId = (name: string, team: string) =>
-  `${(name || "emp").trim().toLowerCase().replace(/\s+/g, "-")}-${(team || "team")
-    .trim()
-    .toLowerCase()}-${Date.now().toString(36).slice(4)}${Math.random().toString(36).slice(2, 6)}`;
+import { supabase } from "@/lib/supabase";
+import {
+  fetchEmployees,
+  addEmployee,
+  updateEmployeeStatus,
+  updateEmployeeTeam,
+} from "@/services/employees";
 
 const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedTeam, setSelectedTeam] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all"); // 👈 nuevo
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
-  // Carga desde CSV (src/data/employees.csv)
+  // Load data + Realtime
   useEffect(() => {
     let mounted = true;
-    (async () => {
+
+    const load = async () => {
       try {
-        const data = await loadEmployees();
+        const data = await fetchEmployees();
         if (mounted) setEmployees(data);
       } catch (e) {
         console.error(e);
       }
-    })();
+    };
+    load();
+
+    const channel = supabase
+      .channel("realtime-employees")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "employees" },
+        async () => {
+          const data = await fetchEmployees();
+          if (mounted) setEmployees(data);
+        }
+      )
+      .subscribe();
+
     return () => {
       mounted = false;
+      supabase.removeChannel(channel);
     };
   }, []);
 
   // Teams (purple palette)
   const teams: Team[] = useMemo(() => {
-    const names = Array.from(new Set(employees.map((e) => e.team))).filter(Boolean);
+    const names = Array.from(
+      new Set(
+        employees
+          .map((e) => (e.team || "").trim())
+          .filter((v) => v && v.length > 0)
+      )
+    );
     const palette = ["#8A05BE", "#B64ACB", "#6D28D9", "#9333EA", "#7C3AED", "#5B21B6", "#A855F7"];
     return names.map((name, i) => ({ id: name, name, color: palette[i % palette.length] }));
   }, [employees]);
+
+  // 🔢 Levels y conteos por nivel
+  const levels = useMemo(() => {
+    return Array.from(
+      new Set(
+        employees
+          .map((e) => (e.levelling || "").trim())
+          .filter((v) => v && v.length > 0)
+      )
+    ).sort();
+  }, [employees]);
+
+  const byLevel: Record<string, number> = useMemo(() => {
+    const m: Record<string, number> = {};
+    levels.forEach((lvl) => {
+      m[lvl] = employees.filter((e) => (e.levelling || "").trim() === lvl).length;
+    });
+    return m;
+  }, [employees, levels]);
 
   // KPIs
   const stats: EmployeeStats = useMemo(() => {
@@ -61,19 +104,22 @@ const Index = () => {
     return { total, active, pending, hiring, backfill, byTeam };
   }, [employees, teams]);
 
-  // Filtros
+  // Filters (incluye levelling)
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
       const okTeam = selectedTeam === "all" || employee.team === selectedTeam;
       const okStatus = selectedStatus === "all" || employee.status === selectedStatus;
+      const okLevel =
+        selectedLevel === "all" ||
+        (employee.levelling && employee.levelling.trim() === selectedLevel);
       const okSearch =
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.position.toLowerCase().includes(searchTerm.toLowerCase());
-      return okTeam && okStatus && okSearch;
+      return okTeam && okStatus && okLevel && okSearch;
     });
-  }, [employees, selectedTeam, selectedStatus, searchTerm]);
+  }, [employees, selectedTeam, selectedStatus, selectedLevel, searchTerm]);
 
-  // Agrupar por team
+  // Group by team
   const employeesByTeam = useMemo(() => {
     const groups: Record<string, Employee[]> = {};
     teams.forEach((team) => {
@@ -82,25 +128,22 @@ const Index = () => {
     return groups;
   }, [filteredEmployees, teams]);
 
-  // --- Handlers (todo local; sin backend) ---
-
+  // Handlers (DB first; realtime actualiza a todos)
   const handleAddEmployee = async (newEmployee: Omit<Employee, "id">) => {
-    const withId: Employee = { ...newEmployee, id: genId(newEmployee.name, newEmployee.team) };
-    setEmployees((prev) => [...prev, withId]);
+    await addEmployee(newEmployee);
     toast({ title: "Employee added", description: `${newEmployee.name} joined the org` });
   };
 
-  const handleStatusChange = async (id: string, next: Employee["status"]) => {
-    setEmployees((prev) => prev.map((e) => (e.id === id ? { ...e, status: next } : e)));
-    const emp = employees.find((e) => e.id === id);
-    if (emp) toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
+  const handleStatusChange = async (emp: Employee, next: Employee["status"]) => {
+    await updateEmployeeStatus(emp.id, next);
+    toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
   };
 
   // Click to cycle: Active → Pending → Hiring → Backfill → Active
   const handleEmployeeClick = async (employee: Employee) => {
     const order: Employee["status"][] = ["Active", "Pending", "Hiring", "Backfill"];
     const next = order[(order.indexOf(employee.status) + 1) % order.length];
-    await handleStatusChange(employee.id, next);
+    await handleStatusChange(employee, next);
   };
 
   const handleDragStart = (e: React.DragEvent, employee: Employee) => {
@@ -113,9 +156,7 @@ const Index = () => {
     e.preventDefault();
     const employeeData: Employee = JSON.parse(e.dataTransfer.getData("application/json"));
     if (employeeData.team !== newTeamId) {
-      setEmployees((prev) =>
-        prev.map((emp) => (emp.id === employeeData.id ? { ...emp, team: newTeamId } : emp))
-      );
+      await updateEmployeeTeam(employeeData.id, newTeamId);
       toast({ title: "Employee moved", description: `${employeeData.name} → ${newTeamId}` });
     }
   };
@@ -140,7 +181,7 @@ const Index = () => {
         {/* Stats */}
         <StatsCards stats={stats} />
 
-        {/* Filters */}
+        {/* Filters (team, status, search) */}
         <FilterBar
           teams={teams}
           selectedTeam={selectedTeam}
@@ -151,8 +192,41 @@ const Index = () => {
           onSearchChange={setSearchTerm}
         />
 
-        {/* Teams */}
-        <div className="grid gap-6">
+        {/* NEW: Levelling filter + chips con conteos */}
+        <div className="mt-4 bg-white/60 rounded-xl p-4 shadow-sm border">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-foreground">Levelling</span>
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value)}
+                className="text-sm border rounded-lg px-3 py-1 bg-white"
+              >
+                <option value="all">All levels</option>
+                {levels.map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {lvl} ({byLevel[lvl] ?? 0})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {levels.map((lvl) => (
+                <span
+                  key={lvl}
+                  className={`px-3 py-1 rounded-full text-sm border ${
+                    selectedLevel === lvl ? "bg-primary/10 border-primary" : "bg-white"
+                  }`}
+                >
+                  {lvl}: {byLevel[lvl] ?? 0}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Teams (each section has a horizontal list) */}
+        <div className="grid gap-6 mt-6">
           {teams.map((team) => (
             <TeamSection
               key={team.id}
@@ -162,7 +236,7 @@ const Index = () => {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onEmployeeClick={handleEmployeeClick}
-              onStatusChange={(emp, next) => handleStatusChange(emp.id, next)}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </div>
@@ -178,6 +252,7 @@ const Index = () => {
                 <li>• <strong>Click card:</strong> Cycle status (Active → Pending → Hiring → Backfill)</li>
                 <li>• <strong>Dropdown menu:</strong> Set a specific status</li>
                 <li>• <strong>Filters:</strong> Search by name or role</li>
+                <li>• <strong>Levelling:</strong> Filter by M1/M2/M3… y ver conteos</li>
               </ul>
             </div>
           </div>
@@ -188,4 +263,3 @@ const Index = () => {
 };
 
 export default Index;
-

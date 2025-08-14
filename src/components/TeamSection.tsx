@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useId } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Employee, Team } from "@/types/employee";
 import { EmployeeCard } from "./EmployeeCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,6 @@ export const TeamSection = ({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
-  const titleId = useId();
 
   const refreshArrows = () => {
     const el = scrollerRef.current;
@@ -42,24 +41,9 @@ export const TeamSection = ({
 
   useEffect(() => {
     refreshArrows();
-    const onResize = () => refreshArrows();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employees]);
 
   const onScroll = () => refreshArrows();
-
-  // Permite usar el scroll del mouse/trackpad en horizontal
-  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    // Si el desplazamiento vertical es mayor, conviértelo en horizontal.
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      el.scrollBy({ left: e.deltaY, behavior: "auto" });
-      e.preventDefault();
-    }
-  };
 
   const scrollByStep = (dir: -1 | 1) => {
     const el = scrollerRef.current;
@@ -74,12 +58,10 @@ export const TeamSection = ({
       className="bg-gradient-card shadow-card border-0 animate-slide-in relative"
       onDragOver={onDragOver}
       onDrop={handleDrop}
-      role="region"
-      aria-labelledby={titleId}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle id={titleId} className="text-lg font-bold text-foreground flex items-center">
+          <CardTitle className="text-lg font-bold text-foreground flex items-center">
             <span
               className="w-3 h-3 rounded-full mr-2"
               style={{ backgroundColor: team.color }}
@@ -105,9 +87,6 @@ export const TeamSection = ({
             <div
               ref={scrollerRef}
               onScroll={onScroll}
-              onWheel={onWheel}
-              role="list"
-              aria-labelledby={titleId}
               className="
                 horizontal-scroll
                 -mx-2 px-2
@@ -124,7 +103,7 @@ export const TeamSection = ({
               }}
             >
               {employees.map((employee) => (
-                <div key={employee.id} className="snap-start" role="listitem">
+                <div key={employee.id} className="snap-start">
                   <EmployeeCard
                     e={employee}
                     onDragStart={onDragStart}

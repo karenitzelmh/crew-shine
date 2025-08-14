@@ -43,6 +43,7 @@ export function EmployeeCard({
   onStatusChange?: (e: Employee, next: Employee["status"]) => void;
   onDragStart?: (ev: React.DragEvent, emp: Employee) => void;
 }) {
+  // Para fallback de avatar si la imagen falla
   const [showImg, setShowImg] = useState<boolean>(!!e.photo);
 
   return (
@@ -51,13 +52,10 @@ export function EmployeeCard({
         min-w-[320px] shrink-0 snap-start select-none
         rounded-2xl p-4 shadow bg-white border
         hover:shadow-lg transition
-        cursor-grab active:cursor-grabbing
       "
       draggable={!!onDragStart}
       onDragStart={(ev) => onDragStart?.(ev, e)}
       onClick={() => onClick?.(e)}
-      role="listitem"
-      aria-label={`${e.name} • ${e.position}${e.level ? ` • Level ${e.level}` : ""}`}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
@@ -92,14 +90,8 @@ export function EmployeeCard({
 
         {/* Actions */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="p-1 rounded hover:bg-accent"
-              aria-label="Open actions"
-              onMouseDown={(ev) => ev.stopPropagation()} // evita iniciar drag al abrir menú
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
+          <DropdownMenuTrigger className="p-1 rounded hover:bg-accent">
+            <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem

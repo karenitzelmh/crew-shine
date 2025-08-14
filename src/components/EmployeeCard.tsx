@@ -1,153 +1,141 @@
-import React, { useState } from "react";
-import { Employee } from "@/types/employee";
-import { MoreVertical, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { useEffect, useRef, useState } from "react";
+import { Employee, Team } from "@/types/employee";
+import { EmployeeCard } from "./EmployeeCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Users, ChevronLeft, ChevronRight } from "lucide-react";
 
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((s) => s[0]!.toUpperCase())
-    .join("");
+interface TeamSectionProps {
+  team: Team;
+  employees: Employee[];
+  onDragStart: (e: React.DragEvent, employee: Employee) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent, teamId: string) => void;
+  onEmployeeClick: (employee: Employee) => void;
+  onStatusChange?: (employee: Employee, next: Employee["status"]) => void;
+  onDelete?: (employee: Employee) => void; // 👈 nuevo
 }
 
-function statusBadgeClass(status: Employee["status"]) {
-  switch (status) {
-    case "Active":
-      return "bg-green-100 text-green-700";
-    case "Pending":
-      return "bg-yellow-100 text-yellow-700";
-    case "Hiring":
-      return "bg-blue-100 text-blue-700";
-    case "Backfill":
-      return "bg-orange-100 text-orange-700";
-    default:
-      return "bg-[hsl(283_95%_96%)] text-[hsl(283_95%_38%)]";
-  }
-}
-
-export function EmployeeCard({
-  e,
-  onClick,
-  onStatusChange,
+export const TeamSection = ({
+  team,
+  employees,
   onDragStart,
-  onDelete, // opcional
-}: {
-  e: Employee;
-  onClick?: (e: Employee) => void;
-  onStatusChange?: (e: Employee, next: Employee["status"]) => void;
-  onDragStart?: (ev: React.DragEvent, emp: Employee) => void;
-  onDelete?: (e: Employee) => void;
-}) {
-  // fallback de avatar si la imagen falla
-  const [showImg, setShowImg] = useState<boolean>(!!e.photo);
+  onDragOver,
+  onDrop,
+  onEmployeeClick,
+  onStatusChange,
+  onDelete, // 👈 nuevo
+}: TeamSectionProps) => {
+  const handleDrop = (e: React.DragEvent) => onDrop(e, team.id);
+
+  // --- scroller independiente por team ---
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const refreshArrows = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanLeft(scrollLeft > 0);
+    setCanRight(scrollLeft + clientWidth < scrollWidth - 1);
+  };
+
+  useEffect(() => {
+    refreshArrows();
+  }, [employees]);
+
+  const onScroll = () => refreshArrows();
+
+  const scrollByStep = (dir: -1 | 1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const STEP = 360; // aprox ancho card + gap
+    el.scrollBy({ left: dir * STEP, behavior: "smooth" });
+  };
 
   return (
-    <div
-      className="
-        min-w-[320px] shrink-0 snap-start select-none
-        rounded-2xl p-4 shadow bg-white border
-        hover:shadow-lg transition
-      "
-      draggable={!!onDragStart}
-      onDragStart={(ev) => onDragStart?.(ev, e)}
-      onClick={() => onClick?.(e)}
+    <Card
+      className="bg-gradient-card shadow-card border-0 animate-slide-in relative"
+      onDragOver={onDragOver}
+      onDrop={handleDrop}
     >
-      <div className="flex items-start gap-3">
-        {/* Avatar */}
-        {showImg && e.photo ? (
-          <img
-            src={e.photo}
-            alt={e.name}
-            className="w-12 h-12 rounded-full object-cover"
-            onError={() => setShowImg(false)}
-          />
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-bold text-foreground flex items-center">
+            <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: team.color }} />
+            {team.name}
+          </CardTitle>
+          <Badge variant="secondary" className="bg-accent text-accent-foreground">
+            <Users className="h-3 w-3 mr-1" />
+            {employees.length}
+          </Badge>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {employees.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">No employees in this team</p>
+          </div>
         ) : (
-          <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold">
-            {initials(e.name)}
+          <div className="relative">
+            {/* Carrusel horizontal SOLO para este team */}
+            <div
+              ref={scrollerRef}
+              onScroll={onScroll}
+              className="
+                horizontal-scroll
+                -mx-2 px-2
+                flex flex-nowrap gap-4
+                overflow-x-auto pb-2
+                snap-x snap-mandatory
+                scrollbar-accent-muted
+              "
+              style={{
+                maskImage:
+                  "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+              }}
+            >
+              {employees.map((employee) => (
+                <div key={employee.id} className="snap-start">
+                  <EmployeeCard
+                    e={employee}
+                    onDragStart={onDragStart}
+                    onClick={onEmployeeClick}
+                    onStatusChange={onStatusChange}
+                    onDelete={onDelete} // 👈 pasa el delete
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Controles por sección */}
+            {canLeft && (
+              <button
+                aria-label="Scroll left"
+                className="absolute left-1 top-1/2 -translate-y-1/2 rounded-full shadow bg-white/80 hover:bg-white p-1 border"
+                onClick={() => scrollByStep(-1)}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            )}
+            {canRight && (
+              <button
+                aria-label="Scroll right"
+                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full shadow bg-white/80 hover:bg-white p-1 border"
+                onClick={() => scrollByStep(1)}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
           </div>
         )}
-
-        {/* Body */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h4 className="font-medium">{e.name}</h4>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
-              {e.status}
-            </span>
-          </div>
-          <div className="text-sm text-muted-foreground">{e.position}</div>
-          {e.level && (
-            <div className="text-xs mt-1 text-foreground/70">
-              Level: <span className="font-medium">{e.level}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded hover:bg-accent" onClick={(ev) => ev.stopPropagation()}>
-            <MoreVertical className="w-4 h-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Active");
-              }}
-            >
-              Set status: Active
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Pending");
-              }}
-            >
-              Set status: Pending
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Hiring");
-              }}
-            >
-              Set status: Hiring
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Backfill");
-              }}
-            >
-              Set status: Backfill
-            </DropdownMenuItem>
-
-            {/* Delete (opcional) */}
-            {onDelete && (
-              <DropdownMenuItem
-                className="text-red-600 focus:text-red-700"
-                onClick={(ev) => {
-                  ev.stopPropagation();
-                  onDelete(e);
-                }}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete employee
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
-}
+};
 
-// Dejamos también el default export por compatibilidad
-export default EmployeeCard;

@@ -26,6 +26,7 @@ export const TeamSection = ({
 }: TeamSectionProps) => {
   const handleDrop = (e: React.DragEvent) => onDrop(e, team.id);
 
+  // --- scroller independiente por team ---
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
@@ -49,10 +50,11 @@ export const TeamSection = ({
 
   const onScroll = () => refreshArrows();
 
-  // Convierte wheel vertical en despl. horizontal
+  // Permite usar el scroll del mouse/trackpad en horizontal
   const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
     if (!el) return;
+    // Si el desplazamiento vertical es mayor, conviértelo en horizontal.
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       el.scrollBy({ left: e.deltaY, behavior: "auto" });
       e.preventDefault();
@@ -62,8 +64,8 @@ export const TeamSection = ({
   const scrollByStep = (dir: -1 | 1) => {
     const el = scrollerRef.current;
     if (!el) return;
-    // Ancho aproximado de una card compacta + gap
-    const STEP = 300;
+    // Tamaño aproximado de una card + gap
+    const STEP = 360;
     el.scrollBy({ left: dir * STEP, behavior: "smooth" });
   };
 
@@ -78,7 +80,10 @@ export const TeamSection = ({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle id={titleId} className="text-lg font-bold text-foreground flex items-center">
-            <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: team.color }} />
+            <span
+              className="w-3 h-3 rounded-full mr-2"
+              style={{ backgroundColor: team.color }}
+            />
             {team.name}
           </CardTitle>
           <Badge variant="secondary" className="bg-accent text-accent-foreground">
@@ -96,7 +101,7 @@ export const TeamSection = ({
           </div>
         ) : (
           <div className="relative">
-            {/* GRID de 3 filas con scroll horizontal */}
+            {/* Carrusel horizontal SOLO para este team */}
             <div
               ref={scrollerRef}
               onScroll={onScroll}
@@ -105,8 +110,10 @@ export const TeamSection = ({
               aria-labelledby={titleId}
               className="
                 horizontal-scroll
+                -mx-2 px-2
+                flex flex-nowrap gap-4
                 overflow-x-auto pb-2
-                grid grid-rows-3 grid-flow-col auto-cols-max gap-4
+                snap-x snap-mandatory
                 scrollbar-accent-muted
               "
               style={{
@@ -117,14 +124,14 @@ export const TeamSection = ({
               }}
             >
               {employees.map((employee) => (
-                <EmployeeCard
-                  key={employee.id}
-                  e={employee}
-                  compact   // 👈 usa el modo compacto
-                  onDragStart={onDragStart}
-                  onClick={onEmployeeClick}
-                  onStatusChange={onStatusChange}
-                />
+                <div key={employee.id} className="snap-start" role="listitem">
+                  <EmployeeCard
+                    e={employee}
+                    onDragStart={onDragStart}
+                    onClick={onEmployeeClick}
+                    onStatusChange={onStatusChange}
+                  />
+                </div>
               ))}
             </div>
 
@@ -132,7 +139,11 @@ export const TeamSection = ({
             {canLeft && (
               <button
                 aria-label="Scroll left"
-                className="absolute left-1 top-1/2 -translate-y-1/2 rounded-full shadow bg-white/80 hover:bg-white p-1 border"
+                className="
+                  absolute left-1 top-1/2 -translate-y-1/2
+                  rounded-full shadow bg-white/80 hover:bg-white
+                  p-1 border
+                "
                 onClick={() => scrollByStep(-1)}
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -141,7 +152,11 @@ export const TeamSection = ({
             {canRight && (
               <button
                 aria-label="Scroll right"
-                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full shadow bg-white/80 hover:bg-white p-1 border"
+                className="
+                  absolute right-1 top-1/2 -translate-y-1/2
+                  rounded-full shadow bg-white/80 hover:bg-white
+                  p-1 border
+                "
                 onClick={() => scrollByStep(1)}
               >
                 <ChevronRight className="w-5 h-5" />

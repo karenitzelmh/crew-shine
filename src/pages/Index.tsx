@@ -8,7 +8,7 @@ import { AddEmployeeDialog } from "@/components/AddEmployeeDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Users2 } from "lucide-react";
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import {
   fetchEmployees,
   addEmployee,

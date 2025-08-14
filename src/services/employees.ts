@@ -32,7 +32,7 @@ export async function addEmployee(newEmp: Omit<Employee, "id">) {
   if (error) throw error;
 }
 
-export async function updateEmployeeStatus(id: string, status: Employee["status"]) {
+export async function updateEmployeeStatus(id: string, status: string) {
   const { error } = await supabase.from("employees").update({ status }).eq("id", id);
   if (error) throw error;
 }

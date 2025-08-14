@@ -17,6 +17,7 @@ export type Database = {
       employees: {
         Row: {
           date: string | null
+          id: string
           levelling: string | null
           name: string
           photo: string | null
@@ -26,6 +27,7 @@ export type Database = {
         }
         Insert: {
           date?: string | null
+          id?: string
           levelling?: string | null
           name: string
           photo?: string | null
@@ -35,6 +37,7 @@ export type Database = {
         }
         Update: {
           date?: string | null
+          id?: string
           levelling?: string | null
           name?: string
           photo?: string | null

@@ -4,7 +4,7 @@ import type { Employee } from "@/types/employee";
 export async function fetchEmployees(): Promise<Employee[]> {
   const { data, error } = await supabase
     .from("employees")
-    .select("id,name,team,position,levelling,status,photo,start_date")
+    .select("id,name,team,position,level,status,photo,start_date")
     .order("name", { ascending: true });
   if (error) throw error;
   return (data || []).map((r: any) => ({
@@ -12,7 +12,7 @@ export async function fetchEmployees(): Promise<Employee[]> {
     name: r.name,
     team: r.team,
     position: r.position,
-    levelling: r.levelling ?? undefined,
+    level: r.level ?? '',
     status: r.status as Employee["status"],
     photo: r.photo ?? undefined,
     startDate: r.start_date ?? undefined,
@@ -24,7 +24,7 @@ export async function addEmployee(newEmp: Omit<Employee, "id">) {
     name: newEmp.name,
     team: newEmp.team,
     position: newEmp.position,
-    levelling: newEmp.levelling ?? null,
+    level: newEmp.level ?? '',
     status: newEmp.status,
     photo: newEmp.photo ?? null,
     start_date: newEmp.startDate ?? null,

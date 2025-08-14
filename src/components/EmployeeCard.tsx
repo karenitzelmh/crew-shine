@@ -19,13 +19,12 @@ function initials(name: string) {
 
 function statusBadgeClass(status: Employee["status"]) {
   switch (status) {
-    case "Active":
+    case "Activo":
       return "bg-green-100 text-green-700";
     case "Pending":
       return "bg-yellow-100 text-yellow-700";
     case "Hiring":
       return "bg-blue-100 text-blue-700";
-    case "Backfill":
     default:
       return "bg-[hsl(283_95%_96%)] text-[hsl(283_95%_38%)]"; // Nubank-ish purple
   }
@@ -93,17 +92,14 @@ export function EmployeeCard({
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Active")}>
-              Set status: Active
+            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Activo")}>
+              Set status: Activo
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange?.(e, "Pending")}>
               Set status: Pending
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange?.(e, "Hiring")}>
               Set status: Hiring
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Backfill")}>
-              Set status: Backfill
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

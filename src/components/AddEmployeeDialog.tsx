@@ -16,28 +16,28 @@ export const AddEmployeeDialog = ({ teams, onAddEmployee }: AddEmployeeDialogPro
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     position: '',
     team: '',
     status: 'Activo' as const,
     photo: '',
+    level: '',
     startDate: new Date().toISOString().split('T')[0]
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.email && formData.team) {
+    if (formData.name && formData.team) {
       onAddEmployee({
         ...formData,
         photo: formData.photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(formData.name)}`
       });
       setFormData({
         name: '',
-        email: '',
         position: '',
         team: '',
         status: 'Activo',
         photo: '',
+        level: '',
         startDate: new Date().toISOString().split('T')[0]
       });
       setOpen(false);
@@ -69,14 +69,12 @@ export const AddEmployeeDialog = ({ teams, onAddEmployee }: AddEmployeeDialogPro
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="level">Nivel</Label>
             <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="juan.perez@empresa.com"
-              required
+              id="level"
+              value={formData.level}
+              onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
+              placeholder="M2.IC4"
             />
           </div>
           

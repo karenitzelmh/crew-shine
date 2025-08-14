@@ -75,7 +75,7 @@ const Index = () => {
     return Array.from(
       new Set(
         employees
-          .map((e) => (e.levelling || "").trim())
+          .map((e) => (e.level || "").trim())
           .filter((v) => v && v.length > 0)
       )
     ).sort();
@@ -84,7 +84,7 @@ const Index = () => {
   const byLevel: Record<string, number> = useMemo(() => {
     const m: Record<string, number> = {};
     levels.forEach((lvl) => {
-      m[lvl] = employees.filter((e) => (e.levelling || "").trim() === lvl).length;
+      m[lvl] = employees.filter((e) => (e.level || "").trim() === lvl).length;
     });
     return m;
   }, [employees, levels]);
@@ -92,10 +92,10 @@ const Index = () => {
   // KPIs
   const stats: EmployeeStats = useMemo(() => {
     const total = employees.length;
-    const active = employees.filter((e) => e.status === "Active").length;
+    const active = employees.filter((e) => e.status === "Activo").length;
     const pending = employees.filter((e) => e.status === "Pending").length;
     const hiring = employees.filter((e) => e.status === "Hiring").length;
-    const backfill = employees.filter((e) => e.status === "Backfill").length;
+    const backfill = 0; // No longer used
 
     const byTeam: Record<string, number> = {};
     teams.forEach((team) => {
@@ -112,7 +112,7 @@ const Index = () => {
       const okStatus = selectedStatus === "all" || employee.status === selectedStatus;
       const okLevel =
         selectedLevel === "all" ||
-        (employee.levelling && employee.levelling.trim() === selectedLevel);
+        (employee.level && employee.level.trim() === selectedLevel);
       const okSearch =
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.position.toLowerCase().includes(searchTerm.toLowerCase());
@@ -140,9 +140,9 @@ const Index = () => {
     toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
   };
 
-  // Click to cycle: Active → Pending → Hiring → Backfill → Active
+  // Click to cycle: Activo → Pending → Hiring → Activo
   const handleEmployeeClick = async (employee: Employee) => {
-    const order: Employee["status"][] = ["Active", "Pending", "Hiring", "Backfill"];
+    const order: Employee["status"][] = ["Activo", "Pending", "Hiring"];
     const next = order[(order.indexOf(employee.status) + 1) % order.length];
     await handleStatusChange(employee, next);
   };
@@ -250,7 +250,7 @@ const Index = () => {
               <h3 className="font-semibold text-foreground mb-2">How to use:</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• <strong>Drag & drop:</strong> Move employees across teams</li>
-                <li>• <strong>Click card:</strong> Cycle status (Active → Pending → Hiring → Backfill)</li>
+                <li>• <strong>Click card:</strong> Cycle status (Activo → Pending → Hiring)</li>
                 <li>• <strong>Dropdown menu:</strong> Set a specific status</li>
                 <li>• <strong>Filters:</strong> Search by name or role</li>
                 <li>• <strong>Levelling:</strong> Filter by M1/M2/M3… and see counts</li>

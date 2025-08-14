@@ -3,9 +3,10 @@ export interface Employee {
   name: string;
   photo: string;
   team: string;
-  status: 'Active' | 'Pending' | 'Hiring' | 'Backfill';
+  status: 'Activo' | 'Pending' | 'Hiring';
   position: string;
   level: string; // e.g., "M2.IC4"
+  startDate?: string;
 }
 
 export interface Team {

@@ -57,7 +57,7 @@ export const TeamSection = ({
             <p className="text-sm">No employees in this team</p>
           </div>
         ) : (
-          <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
+          <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-thin scrollbar-thumb-accent scrollbar-track-muted">
             {employees.map((employee) => (
               <div key={employee.id} className="snap-start">
                 <EmployeeCard

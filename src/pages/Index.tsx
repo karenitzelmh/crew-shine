@@ -92,10 +92,10 @@ const Index = () => {
   // KPIs
   const stats: EmployeeStats = useMemo(() => {
     const total = employees.length;
-    const active = employees.filter((e) => e.status === "Activo").length;
+    const active = employees.filter((e) => e.status === "Active").length;
     const pending = employees.filter((e) => e.status === "Pending").length;
     const hiring = employees.filter((e) => e.status === "Hiring").length;
-    const backfill = 0; // No longer used
+    const backfill = employees.filter((e) => e.status === "Backfill").length;
 
     const byTeam: Record<string, number> = {};
     teams.forEach((team) => {
@@ -140,9 +140,9 @@ const Index = () => {
     toast({ title: "Status updated", description: `${emp.name} is now ${next}` });
   };
 
-  // Click to cycle: Activo → Pending → Hiring → Activo
+  // Click to cycle: Active → Pending → Hiring → Backfill → Active
   const handleEmployeeClick = async (employee: Employee) => {
-    const order: Employee["status"][] = ["Activo", "Pending", "Hiring"];
+    const order: Employee["status"][] = ["Active", "Pending", "Hiring", "Backfill"];
     const next = order[(order.indexOf(employee.status) + 1) % order.length];
     await handleStatusChange(employee, next);
   };
@@ -250,7 +250,7 @@ const Index = () => {
               <h3 className="font-semibold text-foreground mb-2">How to use:</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• <strong>Drag & drop:</strong> Move employees across teams</li>
-                <li>• <strong>Click card:</strong> Cycle status (Activo → Pending → Hiring)</li>
+                <li>• <strong>Click card:</strong> Cycle status (Active → Pending → Hiring → Backfill)</li>
                 <li>• <strong>Dropdown menu:</strong> Set a specific status</li>
                 <li>• <strong>Filters:</strong> Search by name or role</li>
                 <li>• <strong>Levelling:</strong> Filter by M1/M2/M3… and see counts</li>

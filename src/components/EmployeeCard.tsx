@@ -19,14 +19,16 @@ function initials(name: string) {
 
 function statusBadgeClass(status: Employee["status"]) {
   switch (status) {
-    case "Activo":
+    case "Active":
       return "bg-green-100 text-green-700";
     case "Pending":
       return "bg-yellow-100 text-yellow-700";
     case "Hiring":
       return "bg-blue-100 text-blue-700";
+    case "Backfill":
+      return "bg-orange-100 text-orange-700";
     default:
-      return "bg-[hsl(283_95%_96%)] text-[hsl(283_95%_38%)]"; // Nubank-ish purple
+      return "bg-[hsl(283_95%_96%)] text-[hsl(283_95%_38%)]";
   }
 }
 
@@ -92,14 +94,17 @@ export function EmployeeCard({
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Activo")}>
-              Set status: Activo
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Active"); }}>
+              Set status: Active
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Pending")}>
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Pending"); }}>
               Set status: Pending
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onStatusChange?.(e, "Hiring")}>
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Hiring"); }}>
               Set status: Hiring
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Backfill"); }}>
+              Set status: Backfill
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

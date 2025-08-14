@@ -114,7 +114,7 @@
 
 /* ===== Utilities ===== */
 @layer utilities {
-  /* (Tus utilidades actuales) */
+  /* Scrollbars suavecitas (las que ya usabas) */
   .scrollbar-thin {
     scrollbar-width: thin;
   }
@@ -135,16 +135,15 @@
     background-color: hsl(var(--muted));
   }
 
-  /* ===== Horizontal carousels ===== */
+  /* ===== Horizontal carousels por Team ===== */
   .horizontal-scroll {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    /* también funciona en Firefox */
-    scrollbar-width: thin;
+    scroll-snap-type: x mandatory; /* usa 'proximity' si lo prefieres menos estricto */
   }
 
-  /* Scrollbar combinada (thumb = accent, track = muted) */
+  /* Scrollbar combinada (thumb = accent, track = muted) para el carrusel del team */
   .scrollbar-accent-muted {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--accent)) hsl(var(--muted));
@@ -160,6 +159,24 @@
     background-color: hsl(var(--muted));
   }
 
+  /* Borde difuminado en los extremos del carrusel (opcional) */
+  .edge-fade {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black 24px,
+      black calc(100% - 24px),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black 24px,
+      black calc(100% - 24px),
+      transparent 100%
+    );
+  }
+
   /* Evita selección de texto al hacer swipe/drag en tarjetas */
   .no-select {
     -webkit-user-select: none;
@@ -167,3 +184,4 @@
     user-select: none;
   }
 }
+

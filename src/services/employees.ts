@@ -1,10 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { Employee } from "@/types/employee";
 
 export async function fetchEmployees(): Promise<Employee[]> {
   const { data, error } = await supabase
     .from("employees")
-    .select("id,name,team,position,level,status,photo,start_date")
+    .select("*")
     .order("name", { ascending: true });
   if (error) throw error;
   return (data || []).map((r: any) => ({
@@ -12,10 +12,10 @@ export async function fetchEmployees(): Promise<Employee[]> {
     name: r.name,
     team: r.team,
     position: r.position,
-    level: r.level ?? '',
+    level: r.levelling ?? '',
     status: r.status as Employee["status"],
     photo: r.photo ?? undefined,
-    startDate: r.start_date ?? undefined,
+    startDate: r.date ?? undefined,
   }));
 }
 
@@ -24,10 +24,10 @@ export async function addEmployee(newEmp: Omit<Employee, "id">) {
     name: newEmp.name,
     team: newEmp.team,
     position: newEmp.position,
-    level: newEmp.level ?? '',
+    levelling: newEmp.level ?? '',
     status: newEmp.status,
     photo: newEmp.photo ?? null,
-    start_date: newEmp.startDate ?? null,
+    date: newEmp.startDate ?? null,
   });
   if (error) throw error;
 }

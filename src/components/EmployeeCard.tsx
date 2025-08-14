@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Employee } from "@/types/employee";
 import { MoreVertical } from "lucide-react";
 import {
@@ -6,7 +7,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import React from "react";
 
 function initials(name: string) {
   return name
@@ -43,24 +43,28 @@ export function EmployeeCard({
   onStatusChange?: (e: Employee, next: Employee["status"]) => void;
   onDragStart?: (ev: React.DragEvent, emp: Employee) => void;
 }) {
+  // Para fallback de avatar si la imagen falla
+  const [showImg, setShowImg] = useState<boolean>(!!e.photo);
+
   return (
     <div
-      className="min-w-[300px] snap-start rounded-2xl p-4 shadow bg-white border hover:shadow-lg transition"
+      className="
+        min-w-[320px] shrink-0 snap-start select-none
+        rounded-2xl p-4 shadow bg-white border
+        hover:shadow-lg transition
+      "
       draggable={!!onDragStart}
       onDragStart={(ev) => onDragStart?.(ev, e)}
       onClick={() => onClick?.(e)}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        {e.photo ? (
+        {showImg && e.photo ? (
           <img
             src={e.photo}
             alt={e.name}
             className="w-12 h-12 rounded-full object-cover"
-            onError={(img) => {
-              // oculta imagen rota y muestra fallback
-              (img.currentTarget as HTMLImageElement).style.display = "none";
-            }}
+            onError={() => setShowImg(false)}
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold">
@@ -72,11 +76,7 @@ export function EmployeeCard({
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h4 className="font-medium">{e.name}</h4>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(
-                e.status
-              )}`}
-            >
+            <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
               {e.status}
             </span>
           </div>
@@ -94,16 +94,36 @@ export function EmployeeCard({
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Active"); }}>
+            <DropdownMenuItem
+              onClick={(ev) => {
+                ev.stopPropagation();
+                onStatusChange?.(e, "Active");
+              }}
+            >
               Set status: Active
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Pending"); }}>
+            <DropdownMenuItem
+              onClick={(ev) => {
+                ev.stopPropagation();
+                onStatusChange?.(e, "Pending");
+              }}
+            >
               Set status: Pending
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Hiring"); }}>
+            <DropdownMenuItem
+              onClick={(ev) => {
+                ev.stopPropagation();
+                onStatusChange?.(e, "Hiring");
+              }}
+            >
               Set status: Hiring
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Backfill"); }}>
+            <DropdownMenuItem
+              onClick={(ev) => {
+                ev.stopPropagation();
+                onStatusChange?.(e, "Backfill");
+              }}
+            >
               Set status: Backfill
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -114,3 +134,4 @@ export function EmployeeCard({
 }
 
 export default EmployeeCard;
+

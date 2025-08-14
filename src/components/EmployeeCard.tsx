@@ -34,30 +34,33 @@ function statusBadgeClass(status: Employee["status"]) {
 
 export function EmployeeCard({
   e,
+  compact = true, // 👈 por defecto compacta
   onClick,
   onStatusChange,
   onDragStart,
 }: {
   e: Employee;
+  compact?: boolean;
   onClick?: (e: Employee) => void;
   onStatusChange?: (e: Employee, next: Employee["status"]) => void;
   onDragStart?: (ev: React.DragEvent, emp: Employee) => void;
 }) {
   const [showImg, setShowImg] = useState<boolean>(!!e.photo);
 
+  const minWidth = compact ? "min-w-[260px]" : "min-w-[320px]";
+  const padding = compact ? "p-3" : "p-4";
+  const avatar = compact ? "w-10 h-10" : "w-12 h-12";
+  const nameCls = compact ? "text-sm font-medium" : "font-medium";
+  const roleCls = compact ? "text-xs text-muted-foreground" : "text-sm text-muted-foreground";
+  const levelCls = "text-[11px] mt-1 text-foreground/70";
+
   return (
     <div
-      className="
-        min-w-[320px] shrink-0 snap-start select-none
-        rounded-2xl p-4 shadow bg-white border
-        hover:shadow-lg transition
-        cursor-grab active:cursor-grabbing
-      "
+      className={`${minWidth} shrink-0 snap-start select-none rounded-2xl ${padding} shadow bg-white border hover:shadow-lg transition`}
       draggable={!!onDragStart}
       onDragStart={(ev) => onDragStart?.(ev, e)}
       onClick={() => onClick?.(e)}
       role="listitem"
-      aria-label={`${e.name} • ${e.position}${e.level ? ` • Level ${e.level}` : ""}`}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
@@ -65,11 +68,11 @@ export function EmployeeCard({
           <img
             src={e.photo}
             alt={e.name}
-            className="w-12 h-12 rounded-full object-cover"
+            className={`${avatar} rounded-full object-cover`}
             onError={() => setShowImg(false)}
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold">
+          <div className={`${avatar} rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold`}>
             {initials(e.name)}
           </div>
         )}
@@ -77,14 +80,14 @@ export function EmployeeCard({
         {/* Body */}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-medium">{e.name}</h4>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
+            <h4 className={nameCls}>{e.name}</h4>
+            <span className={`text-[11px] px-2 py-[2px] rounded-full ${statusBadgeClass(e.status)}`}>
               {e.status}
             </span>
           </div>
-          <div className="text-sm text-muted-foreground">{e.position}</div>
+          <div className={roleCls}>{e.position}</div>
           {e.level && (
-            <div className="text-xs mt-1 text-foreground/70">
+            <div className={levelCls}>
               Level: <span className="font-medium">{e.level}</span>
             </div>
           )}
@@ -92,46 +95,20 @@ export function EmployeeCard({
 
         {/* Actions */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="p-1 rounded hover:bg-accent"
-              aria-label="Open actions"
-              onMouseDown={(ev) => ev.stopPropagation()} // evita iniciar drag al abrir menú
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
+          <DropdownMenuTrigger className="p-1 rounded hover:bg-accent">
+            <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Active");
-              }}
-            >
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Active"); }}>
               Set status: Active
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Pending");
-              }}
-            >
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Pending"); }}>
               Set status: Pending
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Hiring");
-              }}
-            >
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Hiring"); }}>
               Set status: Hiring
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Backfill");
-              }}
-            >
+            <DropdownMenuItem onClick={(ev) => { ev.stopPropagation(); onStatusChange?.(e, "Backfill"); }}>
               Set status: Backfill
             </DropdownMenuItem>
           </DropdownMenuContent>

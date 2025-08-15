@@ -77,15 +77,13 @@ export function EmployeeCard({
   return (
     <div
       className="
-        min-w-[320px] shrink-0 snap-start select-none
-        rounded-2xl p-4 shadow bg-white border
-        hover:shadow-lg transition relative
+        w-full shrink-0 snap-start select-none
+        rounded-xl p-3 shadow bg-white border
+        hover:shadow-lg transition relative group
       "
       draggable={!!onDragStart && !isEditing}
       onDragStart={(ev) => onDragStart?.(ev, e)}
       onClick={() => !isEditing && onClick?.(e)}
-      style={{ "--group-hover": "opacity-100" } as React.CSSProperties}
-      onMouseEnter={(e) => e.currentTarget.classList.add("group")}
     >
       {/* Edit button */}
       {onEdit && !isEditing && (
@@ -94,23 +92,23 @@ export function EmployeeCard({
             ev.stopPropagation();
             setIsEditing(true);
           }}
-          className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-sm border opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity"
+          className="absolute top-2 right-2 p-1 rounded-full bg-white/90 hover:bg-white shadow-sm border opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity z-10"
         >
           <Edit2 className="w-3 h-3 text-muted-foreground" />
         </button>
       )}
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2">
         {/* Avatar */}
         {showImg && e.photo ? (
           <img
             src={e.photo}
             alt={e.name}
-            className="w-12 h-12 rounded-full object-cover"
+            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
             onError={() => setShowImg(false)}
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold">
+          <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold text-xs flex-shrink-0">
             {initials(isEditing ? editName : e.name)}
           </div>
         )}
@@ -118,29 +116,29 @@ export function EmployeeCard({
         {/* Body */}
         <div className="flex-1">
           {isEditing ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder="Name"
-                className="h-8 text-sm"
+                className="h-7 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
               <Input
                 value={editPosition}
                 onChange={(e) => setEditPosition(e.target.value)}
                 placeholder="Position"
-                className="h-8 text-sm"
+                className="h-7 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
               <Input
                 value={editLevel}
                 onChange={(e) => setEditLevel(e.target.value)}
                 placeholder="Level (optional)"
-                className="h-8 text-sm"
+                className="h-7 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <button
                   onClick={(ev) => {
                     ev.stopPropagation();
@@ -163,13 +161,13 @@ export function EmployeeCard({
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-2">
-                <h4 className="font-medium">{e.name}</h4>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
+              <div className="flex items-center gap-1 mb-1">
+                <h4 className="font-medium text-sm truncate">{e.name}</h4>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${statusBadgeClass(e.status)} flex-shrink-0`}>
                   {e.status}
                 </span>
               </div>
-              <div className="text-sm text-muted-foreground">{e.position}</div>
+              <div className="text-xs text-muted-foreground truncate">{e.position}</div>
               {e.level && (
                 <div className="text-xs mt-1 text-foreground/70">
                   Level: <span className="font-medium">{e.level}</span>
@@ -182,8 +180,8 @@ export function EmployeeCard({
         {/* Actions */}
         {!isEditing && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="p-1 rounded hover:bg-accent">
-              <MoreVertical className="w-4 h-4" />
+            <DropdownMenuTrigger className="p-1 rounded hover:bg-accent flex-shrink-0">
+              <MoreVertical className="w-3 h-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem

@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Employee, Team } from "@/types/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 interface TeamSummaryCardsProps {
   teams: Team[];
@@ -18,75 +17,66 @@ export const TeamSummaryCards = ({ teams, employees }: TeamSummaryCardsProps) =>
       const backfill = teamEmployees.filter((emp) => emp.status === "Backfill").length;
       const total = teamEmployees.length;
 
-      return {
-        team,
-        total,
-        active,
-        pending,
-        hiring,
-        backfill,
-      };
+      return { team, total, active, pending, hiring, backfill };
     });
   }, [teams, employees]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+    <div className="grid-tight mt-4">
       {teamStats.map((stat) => (
-        <Card
-          key={stat.team.id}
-          className="bg-gradient-card shadow-card border-0"
-        >
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-bold text-foreground flex items-center">
+        <Card key={stat.team.id} className="card-compact-tight">
+          <CardHeader className="!p-3 !pb-2">
+            <CardTitle className="card-title flex items-center">
               <span
-                className="w-3 h-3 rounded-full mr-2"
+                className="w-2 h-2 rounded-full mr-2"
                 style={{ backgroundColor: stat.team.color }}
               />
               {stat.team.name}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Total</span>
-                <Badge variant="secondary">{stat.total}</Badge>
+
+          <CardContent className="!p-3 !pt-0">
+            <div className="metrics">
+              <div className="metric">
+                <span>Total</span>
+                <span className="pill">{stat.total}</span>
               </div>
+
               {stat.active > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Active</span>
-                  <Badge className="bg-green-100 text-green-700 hover:bg-green-200">
-                    {stat.active}
-                  </Badge>
+                <div className="metric">
+                  <span>Active</span>
+                  <span className="pill">{stat.active}</span>
                 </div>
               )}
+
               {stat.pending > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Pending</span>
-                  <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
-                    {stat.pending}
-                  </Badge>
+                <div className="metric">
+                  <span>Pending</span>
+                  <span className="pill">{stat.pending}</span>
                 </div>
               )}
+
               {stat.hiring > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Hiring</span>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
-                    {stat.hiring}
-                  </Badge>
+                <div className="metric">
+                  <span>Hiring</span>
+                  <span className="pill">{stat.hiring}</span>
                 </div>
               )}
+
               {stat.backfill > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Backfill</span>
-                  <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200">
-                    {stat.backfill}
-                  </Badge>
+                <div className="metric">
+                  <span>Backfill</span>
+                  <span className="pill">{stat.backfill}</span>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
       ))}
+    </div>
+  );
+};
+
     </div>
   );
 };

@@ -112,35 +112,49 @@
   }
 }
 
+/* ====== COMPONENTS: modo compacto para cards de totales por equipo ====== */
+@layer components {
+  /* Card compacta (usa esta clase en la card de cada team) */
+  .card-compact {
+    @apply rounded-xl p-3 sm:p-4 shadow-card bg-white/70;
+  }
+  .card-compact .card-title {
+    @apply text-sm sm:text-base font-semibold text-foreground;
+  }
+  .card-compact .metrics {
+    @apply space-y-1.5;
+  }
+  .card-compact .metric {
+    @apply flex items-center justify-between text-xs text-muted-foreground;
+  }
+  .card-compact .pill {
+    @apply inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full
+           bg-muted text-foreground/80 text-[10px] font-medium;
+  }
+
+  /* Aún más pequeño (opcional): .card-compact-tight */
+  .card-compact-tight {
+    @apply rounded-lg p-2.5 shadow bg-white/70;
+  }
+  .card-compact-tight .card-title { @apply text-sm; }
+  .card-compact-tight .metric { @apply text-[11px]; }
+  .card-compact-tight .pill { @apply text-[9px] h-4 px-1; }
+}
+
 /* ===== Utilities ===== */
 @layer utilities {
-  /* (Tus utilidades actuales) */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-  .scrollbar-thumb-accent {
-    scrollbar-color: hsl(var(--accent)) transparent;
-  }
-  .scrollbar-track-muted {
-    scrollbar-color: hsl(var(--accent)) hsl(var(--muted));
-  }
-  .scrollbar-thin::-webkit-scrollbar {
-    height: 6px;
-  }
-  .scrollbar-thumb-accent::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--accent));
-    border-radius: 3px;
-  }
-  .scrollbar-track-muted::-webkit-scrollbar-track {
-    background-color: hsl(var(--muted));
-  }
+  .scrollbar-thin { scrollbar-width: thin; }
+  .scrollbar-thumb-accent { scrollbar-color: hsl(var(--accent)) transparent; }
+  .scrollbar-track-muted { scrollbar-color: hsl(var(--accent)) hsl(var(--muted)); }
+  .scrollbar-thin::-webkit-scrollbar { height: 6px; }
+  .scrollbar-thumb-accent::-webkit-scrollbar-thumb { background-color: hsl(var(--accent)); border-radius: 3px; }
+  .scrollbar-track-muted::-webkit-scrollbar-track { background-color: hsl(var(--muted)); }
 
   /* ===== Horizontal carousels ===== */
   .horizontal-scroll {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    /* también funciona en Firefox */
     scrollbar-width: thin;
   }
 
@@ -149,21 +163,13 @@
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--accent)) hsl(var(--muted));
   }
-  .scrollbar-accent-muted::-webkit-scrollbar {
-    height: 6px;
-  }
-  .scrollbar-accent-muted::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--accent));
-    border-radius: 3px;
-  }
-  .scrollbar-accent-muted::-webkit-scrollbar-track {
-    background-color: hsl(var(--muted));
-  }
+  .scrollbar-accent-muted::-webkit-scrollbar { height: 6px; }
+  .scrollbar-accent-muted::-webkit-scrollbar-thumb { background-color: hsl(var(--accent)); border-radius: 3px; }
+  .scrollbar-accent-muted::-webkit-scrollbar-track { background-color: hsl(var(--muted)); }
 
   /* Evita selección de texto al hacer swipe/drag en tarjetas */
-  .no-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
+  .no-select { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
+
+  /* Grid compacto (opcional para el contenedor de cards) */
+  .grid-tight { @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4; }
 }

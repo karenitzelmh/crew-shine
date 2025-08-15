@@ -31,7 +31,7 @@ export const TeamSection = ({
 
   return (
     <Card
-      className="bg-gradient-card shadow-card border-0 animate-slide-in relative"
+      className="bg-gradient-card shadow-card border-0 animate-slide-in relative min-w-[280px] max-w-[320px] flex-shrink-0"
       onDragOver={onDragOver}
       onDrop={handleDrop}
     >
@@ -51,14 +51,14 @@ export const TeamSection = ({
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="max-h-[400px] overflow-y-auto">
         {employees.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No employees in this team</p>
+          <div className="text-center py-6 text-muted-foreground">
+            <Users className="h-6 w-6 mx-auto mb-2 opacity-50" />
+            <p className="text-xs">No employees in this team</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
             {employees.map((employee) => (
               <EmployeeCard
                 key={employee.id}

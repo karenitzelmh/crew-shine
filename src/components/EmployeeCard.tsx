@@ -78,8 +78,8 @@ export function EmployeeCard({
     <div
       className="
         w-full shrink-0 snap-start select-none
-        rounded-xl p-3 shadow bg-white border
-        hover:shadow-lg transition relative group
+        rounded-lg p-2 shadow-sm bg-white border
+        hover:shadow-md transition relative group
       "
       draggable={!!onDragStart && !isEditing}
       onDragStart={(ev) => onDragStart?.(ev, e)}
@@ -92,9 +92,9 @@ export function EmployeeCard({
             ev.stopPropagation();
             setIsEditing(true);
           }}
-          className="absolute top-2 right-2 p-1 rounded-full bg-white/90 hover:bg-white shadow-sm border opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity z-10"
+          className="absolute top-1 right-1 p-1 rounded-full bg-white/90 hover:bg-white shadow-sm border opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity z-10"
         >
-          <Edit2 className="w-3 h-3 text-muted-foreground" />
+          <Edit2 className="w-2.5 h-2.5 text-muted-foreground" />
         </button>
       )}
 
@@ -104,11 +104,11 @@ export function EmployeeCard({
           <img
             src={e.photo}
             alt={e.name}
-            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+            className="w-6 h-6 rounded-full object-cover flex-shrink-0"
             onError={() => setShowImg(false)}
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold text-xs flex-shrink-0">
+          <div className="w-6 h-6 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold text-xs flex-shrink-0">
             {initials(isEditing ? editName : e.name)}
           </div>
         )}
@@ -121,21 +121,21 @@ export function EmployeeCard({
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder="Name"
-                className="h-7 text-xs"
+                className="h-6 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
               <Input
                 value={editPosition}
                 onChange={(e) => setEditPosition(e.target.value)}
                 placeholder="Position"
-                className="h-7 text-xs"
+                className="h-6 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
               <Input
                 value={editLevel}
                 onChange={(e) => setEditLevel(e.target.value)}
-                placeholder="Level (optional)"
-                className="h-7 text-xs"
+                placeholder="Level"
+                className="h-6 text-xs"
                 onClick={(e) => e.stopPropagation()}
               />
               <div className="flex gap-1">
@@ -144,7 +144,7 @@ export function EmployeeCard({
                     ev.stopPropagation();
                     handleSaveEdit();
                   }}
-                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
+                  className="px-1.5 py-0.5 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
                 >
                   Save
                 </button>
@@ -153,7 +153,7 @@ export function EmployeeCard({
                     ev.stopPropagation();
                     handleCancelEdit();
                   }}
-                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                  className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
                 >
                   Cancel
                 </button>
@@ -161,16 +161,16 @@ export function EmployeeCard({
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-1 mb-1">
-                <h4 className="font-medium text-sm truncate">{e.name}</h4>
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${statusBadgeClass(e.status)} flex-shrink-0`}>
-                  {e.status}
+              <div className="flex items-center justify-between mb-1">
+                <h4 className="font-medium text-xs truncate flex-1">{e.name}</h4>
+                <span className={`text-xs px-1 py-0.5 rounded text-xs ${statusBadgeClass(e.status)} flex-shrink-0 ml-1`}>
+                  {e.status.charAt(0)}
                 </span>
               </div>
               <div className="text-xs text-muted-foreground truncate">{e.position}</div>
               {e.level && (
-                <div className="text-xs mt-1 text-foreground/70">
-                  Level: <span className="font-medium">{e.level}</span>
+                <div className="text-xs mt-0.5 text-foreground/70 truncate">
+                  {e.level}
                 </div>
               )}
             </>
@@ -180,7 +180,7 @@ export function EmployeeCard({
         {/* Actions */}
         {!isEditing && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="p-1 rounded hover:bg-accent flex-shrink-0">
+            <DropdownMenuTrigger className="p-0.5 rounded hover:bg-accent flex-shrink-0">
               <MoreVertical className="w-3 h-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

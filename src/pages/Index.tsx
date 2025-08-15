@@ -250,8 +250,13 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Teams */}
-        <div className="grid gap-6 mt-6">
+        {/* Teams - Horizontal Layout */}
+        <div className="flex gap-4 mt-6 overflow-x-auto pb-4"
+             style={{
+               maskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+               WebkitMaskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)"
+             }}
+        >
           {teams.map((team) => (
             <TeamSection
               key={team.id}

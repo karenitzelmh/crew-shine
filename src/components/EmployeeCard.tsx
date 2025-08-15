@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Employee } from "@/types/employee";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Edit2, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 function initials(name: string) {
   return name
@@ -37,26 +39,67 @@ export function EmployeeCard({
   onClick,
   onStatusChange,
   onDragStart,
+  onEdit,
+  onDelete,
 }: {
   e: Employee;
   onClick?: (e: Employee) => void;
   onStatusChange?: (e: Employee, next: Employee["status"]) => void;
   onDragStart?: (ev: React.DragEvent, emp: Employee) => void;
+  onEdit?: (e: Employee, updates: Partial<Pick<Employee, "name" | "position" | "level">>) => void;
+  onDelete?: (e: Employee) => void;
 }) {
   // Para fallback de avatar si la imagen falla
   const [showImg, setShowImg] = useState<boolean>(!!e.photo);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(e.name);
+  const [editPosition, setEditPosition] = useState(e.position);
+  const [editLevel, setEditLevel] = useState(e.level || "");
+
+  const handleSaveEdit = () => {
+    if (editName.trim() && editPosition.trim()) {
+      onEdit?.(e, {
+        name: editName.trim(),
+        position: editPosition.trim(),
+        level: editLevel.trim() || undefined,
+      });
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditName(e.name);
+    setEditPosition(e.position);
+    setEditLevel(e.level || "");
+    setIsEditing(false);
+  };
 
   return (
     <div
       className="
         min-w-[320px] shrink-0 snap-start select-none
         rounded-2xl p-4 shadow bg-white border
-        hover:shadow-lg transition
+        hover:shadow-lg transition relative
       "
-      draggable={!!onDragStart}
+      draggable={!!onDragStart && !isEditing}
       onDragStart={(ev) => onDragStart?.(ev, e)}
-      onClick={() => onClick?.(e)}
+      onClick={() => !isEditing && onClick?.(e)}
+      style={{ "--group-hover": "opacity-100" } as React.CSSProperties}
+      onMouseEnter={(e) => e.currentTarget.classList.add("group")}
     >
+      {/* Edit button */}
+      {onEdit && !isEditing && (
+        <button
+          onClick={(ev) => {
+            ev.stopPropagation();
+            setIsEditing(true);
+          }}
+          className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-sm border opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity"
+        >
+          <Edit2 className="w-3 h-3 text-muted-foreground" />
+        </button>
+      )}
+
       <div className="flex items-start gap-3">
         {/* Avatar */}
         {showImg && e.photo ? (
@@ -68,66 +111,131 @@ export function EmployeeCard({
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-semibold">
-            {initials(e.name)}
+            {initials(isEditing ? editName : e.name)}
           </div>
         )}
 
         {/* Body */}
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h4 className="font-medium">{e.name}</h4>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
-              {e.status}
-            </span>
-          </div>
-          <div className="text-sm text-muted-foreground">{e.position}</div>
-          {e.level && (
-            <div className="text-xs mt-1 text-foreground/70">
-              Level: <span className="font-medium">{e.level}</span>
+          {isEditing ? (
+            <div className="space-y-2">
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Name"
+                className="h-8 text-sm"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <Input
+                value={editPosition}
+                onChange={(e) => setEditPosition(e.target.value)}
+                placeholder="Position"
+                className="h-8 text-sm"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <Input
+                value={editLevel}
+                onChange={(e) => setEditLevel(e.target.value)}
+                placeholder="Level (optional)"
+                className="h-8 text-sm"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    handleSaveEdit();
+                  }}
+                  className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    handleCancelEdit();
+                  }}
+                  className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <h4 className="font-medium">{e.name}</h4>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadgeClass(e.status)}`}>
+                  {e.status}
+                </span>
+              </div>
+              <div className="text-sm text-muted-foreground">{e.position}</div>
+              {e.level && (
+                <div className="text-xs mt-1 text-foreground/70">
+                  Level: <span className="font-medium">{e.level}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded hover:bg-accent">
-            <MoreVertical className="w-4 h-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Active");
-              }}
-            >
-              Set status: Active
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Pending");
-              }}
-            >
-              Set status: Pending
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Hiring");
-              }}
-            >
-              Set status: Hiring
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onStatusChange?.(e, "Backfill");
-              }}
-            >
-              Set status: Backfill
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!isEditing && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="p-1 rounded hover:bg-accent">
+              <MoreVertical className="w-4 h-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onStatusChange?.(e, "Active");
+                }}
+              >
+                Set status: Active
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onStatusChange?.(e, "Pending");
+                }}
+              >
+                Set status: Pending
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onStatusChange?.(e, "Hiring");
+                }}
+              >
+                Set status: Hiring
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onStatusChange?.(e, "Backfill");
+                }}
+              >
+                Set status: Backfill
+              </DropdownMenuItem>
+              {onDelete && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      onDelete?.(e);
+                    }}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Employee
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   );

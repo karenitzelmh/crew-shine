@@ -42,3 +42,18 @@ export async function updateEmployeeTeam(id: string, team: string) {
   if (error) throw error;
 }
 
+export async function updateEmployee(id: string, updates: Partial<Pick<Employee, "name" | "position" | "level">>) {
+  const dbUpdates: any = {};
+  if (updates.name) dbUpdates.name = updates.name;
+  if (updates.position) dbUpdates.position = updates.position;
+  if (updates.level) dbUpdates.levelling = updates.level;
+  
+  const { error } = await supabase.from("employees").update(dbUpdates).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteEmployee(id: string) {
+  const { error } = await supabase.from("employees").delete().eq("id", id);
+  if (error) throw error;
+}
+

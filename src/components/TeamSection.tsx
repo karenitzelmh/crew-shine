@@ -13,6 +13,8 @@ interface TeamSectionProps {
   onDrop: (e: React.DragEvent, teamId: string) => void;
   onEmployeeClick: (employee: Employee) => void;
   onStatusChange?: (employee: Employee, next: Employee["status"]) => void;
+  onEditEmployee?: (employee: Employee, updates: Partial<Pick<Employee, "name" | "position" | "level">>) => void;
+  onDeleteEmployee?: (employee: Employee) => void;
 }
 
 export const TeamSection = ({
@@ -23,6 +25,8 @@ export const TeamSection = ({
   onDrop,
   onEmployeeClick,
   onStatusChange,
+  onEditEmployee,
+  onDeleteEmployee,
 }: TeamSectionProps) => {
   const handleDrop = (e: React.DragEvent) => onDrop(e, team.id);
 
@@ -109,6 +113,8 @@ export const TeamSection = ({
                     onDragStart={onDragStart}
                     onClick={onEmployeeClick}
                     onStatusChange={onStatusChange}
+                    onEdit={onEditEmployee}
+                    onDelete={onDeleteEmployee}
                   />
                 </div>
               ))}

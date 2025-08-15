@@ -14,7 +14,10 @@ import {
   addEmployee,
   updateEmployeeStatus,
   updateEmployeeTeam,
+  updateEmployee,
+  deleteEmployee,
 } from "@/services/employees";
+import { TeamSummaryCards } from "@/components/TeamSummaryCards";
 
 const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -162,6 +165,24 @@ const Index = () => {
     }
   };
 
+  const handleEditEmployee = async (emp: Employee, updates: Partial<Pick<Employee, "name" | "position" | "level">>) => {
+    await updateEmployee(emp.id, updates);
+    toast({ 
+      title: "Employee updated", 
+      description: `${updates.name || emp.name} information updated` 
+    });
+  };
+
+  const handleDeleteEmployee = async (emp: Employee) => {
+    if (confirm(`Are you sure you want to delete ${emp.name}?`)) {
+      await deleteEmployee(emp.id);
+      toast({ 
+        title: "Employee deleted", 
+        description: `${emp.name} has been removed from the system` 
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
@@ -181,6 +202,9 @@ const Index = () => {
 
         {/* Stats */}
         <StatsCards stats={stats} />
+
+        {/* Team Summary */}
+        <TeamSummaryCards teams={teams} employees={employees} />
 
         {/* Filters (team, status, search) */}
         <FilterBar
@@ -238,6 +262,8 @@ const Index = () => {
               onDrop={handleDrop}
               onEmployeeClick={handleEmployeeClick}
               onStatusChange={handleStatusChange}
+              onEditEmployee={handleEditEmployee}
+              onDeleteEmployee={handleDeleteEmployee}
             />
           ))}
         </div>

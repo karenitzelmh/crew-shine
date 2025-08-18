@@ -203,18 +203,20 @@ const Index = () => {
         <TeamSummaryCards teams={teams} employees={employees} />
 
         {/* Filters */}
-        <FilterBar
-          teams={teams}
-          employees={employees}
-          selectedTeams={selectedTeams}
-          selectedStatuses={selectedStatuses}
-          selectedLevels={selectedLevels}
-          selectedEmployees={selectedEmployees}
-          onTeamsChange={setSelectedTeams}
-          onStatusesChange={setSelectedStatuses}
-          onLevelsChange={setSelectedLevels}
-          onEmployeesChange={setSelectedEmployees}
-        />
+        <div className="mt-8">
+          <FilterBar
+            teams={teams}
+            employees={employees}
+            selectedTeams={selectedTeams}
+            selectedStatuses={selectedStatuses}
+            selectedLevels={selectedLevels}
+            selectedEmployees={selectedEmployees}
+            onTeamsChange={setSelectedTeams}
+            onStatusesChange={setSelectedStatuses}
+            onLevelsChange={setSelectedLevels}
+            onEmployeesChange={setSelectedEmployees}
+          />
+        </div>
 
         {/* Teams - Horizontal Layout */}
         <div className="flex gap-4 mt-6 overflow-x-auto pb-4"

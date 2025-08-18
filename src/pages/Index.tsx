@@ -23,8 +23,8 @@ const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedLevel, setSelectedLevel] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Load data + Realtime
@@ -108,20 +108,16 @@ const Index = () => {
     return { total, active, pending, hiring, backfill, byTeam };
   }, [employees, teams]);
 
-  // Filters (incluye levelling)
+  // Filters
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
       const okTeam = selectedTeams.length === 0 || selectedTeams.includes(employee.team);
       const okStatus = selectedStatuses.length === 0 || selectedStatuses.includes(employee.status);
-      const okLevel =
-        selectedLevel === "all" ||
-        (employee.level && employee.level.trim() === selectedLevel);
-      const okSearch =
-        employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.position.toLowerCase().includes(searchTerm.toLowerCase());
-      return okTeam && okStatus && okLevel && okSearch;
+      const okLevel = selectedLevels.length === 0 || selectedLevels.includes(employee.level);
+      const okEmployee = selectedEmployees.length === 0 || selectedEmployees.includes(employee.id);
+      return okTeam && okStatus && okLevel && okEmployee;
     });
-  }, [employees, selectedTeams, selectedStatuses, selectedLevel, searchTerm]);
+  }, [employees, selectedTeams, selectedStatuses, selectedLevels, selectedEmployees]);
 
   // Agrupar por team
   const employeesByTeam = useMemo(() => {
@@ -206,49 +202,19 @@ const Index = () => {
         {/* Team Summary */}
         <TeamSummaryCards teams={teams} employees={employees} />
 
-        {/* Filters (team, status, search) */}
+        {/* Filters */}
         <FilterBar
           teams={teams}
+          employees={employees}
           selectedTeams={selectedTeams}
           selectedStatuses={selectedStatuses}
-          searchTerm={searchTerm}
+          selectedLevels={selectedLevels}
+          selectedEmployees={selectedEmployees}
           onTeamsChange={setSelectedTeams}
           onStatusesChange={setSelectedStatuses}
-          onSearchChange={setSearchTerm}
+          onLevelsChange={setSelectedLevels}
+          onEmployeesChange={setSelectedEmployees}
         />
-
-        {/* Levelling filter + chips */}
-        <div className="mt-4 bg-white/60 rounded-xl p-4 shadow-sm border">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-foreground">Levelling</span>
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className="text-sm border rounded-lg px-3 py-1 bg-white"
-              >
-                <option value="all">All levels</option>
-                {levels.map((lvl) => (
-                  <option key={lvl} value={lvl}>
-                    {lvl} ({byLevel[lvl] ?? 0})
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {levels.map((lvl) => (
-                <span
-                  key={lvl}
-                  className={`px-3 py-1 rounded-full text-sm border ${
-                    selectedLevel === lvl ? "bg-primary/10 border-primary" : "bg-white"
-                  }`}
-                >
-                  {lvl}: {byLevel[lvl] ?? 0}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Teams - Horizontal Layout */}
         <div className="flex gap-4 mt-6 overflow-x-auto pb-4"

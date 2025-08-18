@@ -1,32 +1,26 @@
 import { Team } from "@/types/employee";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Filter } from "lucide-react";
 
 interface FilterBarProps {
   teams: Team[];
-  selectedTeam: string;
-  selectedStatus: string;
+  selectedTeams: string[];
+  selectedStatuses: string[];
   searchTerm: string;
-  onTeamChange: (team: string) => void;
-  onStatusChange: (status: string) => void;
+  onTeamsChange: (teams: string[]) => void;
+  onStatusesChange: (statuses: string[]) => void;
   onSearchChange: (search: string) => void;
 }
 
 export const FilterBar = ({
   teams,
-  selectedTeam,
-  selectedStatus,
+  selectedTeams,
+  selectedStatuses,
   searchTerm,
-  onTeamChange,
-  onStatusChange,
+  onTeamsChange,
+  onStatusesChange,
   onSearchChange,
 }: FilterBarProps) => {
   return (
@@ -54,37 +48,80 @@ export const FilterBar = ({
 
         {/* Team */}
         <div className="space-y-2">
-          <Label htmlFor="team-filter">Team</Label>
-          <Select value={selectedTeam} onValueChange={onTeamChange}>
-            <SelectTrigger id="team-filter">
-              <SelectValue placeholder="All teams" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All teams</SelectItem>
-              {teams.map((team) => (
-                <SelectItem key={team.id} value={team.id}>
+          <Label>Teams</Label>
+          <div className="space-y-2 max-h-32 overflow-y-auto bg-background rounded-md border p-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="all-teams"
+                checked={selectedTeams.length === 0}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onTeamsChange([]);
+                  }
+                }}
+              />
+              <Label htmlFor="all-teams" className="text-sm font-normal">
+                All teams
+              </Label>
+            </div>
+            {teams.map((team) => (
+              <div key={team.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`team-${team.id}`}
+                  checked={selectedTeams.includes(team.id)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onTeamsChange([...selectedTeams, team.id]);
+                    } else {
+                      onTeamsChange(selectedTeams.filter(t => t !== team.id));
+                    }
+                  }}
+                />
+                <Label htmlFor={`team-${team.id}`} className="text-sm font-normal">
                   {team.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Status */}
         <div className="space-y-2">
-          <Label htmlFor="status-filter">Status</Label>
-          <Select value={selectedStatus} onValueChange={onStatusChange}>
-            <SelectTrigger id="status-filter">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Hiring">Hiring</SelectItem>
-              <SelectItem value="Backfill">Backfill</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>Status</Label>
+          <div className="space-y-2 max-h-32 overflow-y-auto bg-background rounded-md border p-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="all-statuses"
+                checked={selectedStatuses.length === 0}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onStatusesChange([]);
+                  }
+                }}
+              />
+              <Label htmlFor="all-statuses" className="text-sm font-normal">
+                All statuses
+              </Label>
+            </div>
+            {["Active", "Pending", "Hiring", "Backfill"].map((status) => (
+              <div key={status} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`status-${status}`}
+                  checked={selectedStatuses.includes(status)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onStatusesChange([...selectedStatuses, status]);
+                    } else {
+                      onStatusesChange(selectedStatuses.filter(s => s !== status));
+                    }
+                  }}
+                />
+                <Label htmlFor={`status-${status}`} className="text-sm font-normal">
+                  {status}
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

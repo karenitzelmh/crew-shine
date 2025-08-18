@@ -21,8 +21,8 @@ import { TeamSummaryCards } from "@/components/TeamSummaryCards";
 
 const Index = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
@@ -111,8 +111,8 @@ const Index = () => {
   // Filters (incluye levelling)
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
-      const okTeam = selectedTeam === "all" || employee.team === selectedTeam;
-      const okStatus = selectedStatus === "all" || employee.status === selectedStatus;
+      const okTeam = selectedTeams.length === 0 || selectedTeams.includes(employee.team);
+      const okStatus = selectedStatuses.length === 0 || selectedStatuses.includes(employee.status);
       const okLevel =
         selectedLevel === "all" ||
         (employee.level && employee.level.trim() === selectedLevel);
@@ -121,7 +121,7 @@ const Index = () => {
         employee.position.toLowerCase().includes(searchTerm.toLowerCase());
       return okTeam && okStatus && okLevel && okSearch;
     });
-  }, [employees, selectedTeam, selectedStatus, selectedLevel, searchTerm]);
+  }, [employees, selectedTeams, selectedStatuses, selectedLevel, searchTerm]);
 
   // Agrupar por team
   const employeesByTeam = useMemo(() => {
@@ -209,11 +209,11 @@ const Index = () => {
         {/* Filters (team, status, search) */}
         <FilterBar
           teams={teams}
-          selectedTeam={selectedTeam}
-          selectedStatus={selectedStatus}
+          selectedTeams={selectedTeams}
+          selectedStatuses={selectedStatuses}
           searchTerm={searchTerm}
-          onTeamChange={setSelectedTeam}
-          onStatusChange={setSelectedStatus}
+          onTeamsChange={setSelectedTeams}
+          onStatusesChange={setSelectedStatuses}
           onSearchChange={setSearchTerm}
         />
 

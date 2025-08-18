@@ -30,55 +30,55 @@ export const TeamSummaryCards = ({ teams, employees }: TeamSummaryCardsProps) =>
   }, [teams, employees]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 mt-6">
       {teamStats.map((stat) => (
         <Card
           key={stat.team.id}
           className="bg-gradient-card shadow-card border-0"
         >
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-bold text-foreground flex items-center">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold text-foreground flex items-center">
               <span
-                className="w-3 h-3 rounded-full mr-2"
+                className="w-2 h-2 rounded-full mr-1"
                 style={{ backgroundColor: stat.team.color }}
               />
-              {stat.team.name}
+              <span className="truncate">{stat.team.name}</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          <CardContent className="pt-0">
+            <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Total</span>
-                <Badge variant="secondary">{stat.total}</Badge>
+                <span className="text-xs font-medium">Total</span>
+                <Badge variant="secondary" className="text-xs h-4 px-2">{stat.total}</Badge>
               </div>
               {stat.active > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Active</span>
-                  <Badge className="bg-green-100 text-green-700 hover:bg-green-200">
+                  <span className="text-xs text-muted-foreground">Active</span>
+                  <Badge className="bg-green-100 text-green-700 hover:bg-green-200 text-xs h-4 px-2">
                     {stat.active}
                   </Badge>
                 </div>
               )}
               {stat.pending > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Pending</span>
-                  <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
+                  <span className="text-xs text-muted-foreground">Pending</span>
+                  <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 text-xs h-4 px-2">
                     {stat.pending}
                   </Badge>
                 </div>
               )}
               {stat.hiring > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Hiring</span>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">
+                  <span className="text-xs text-muted-foreground">Hiring</span>
+                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs h-4 px-2">
                     {stat.hiring}
                   </Badge>
                 </div>
               )}
               {stat.backfill > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Backfill</span>
-                  <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200">
+                  <span className="text-xs text-muted-foreground">Backfill</span>
+                  <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200 text-xs h-4 px-2">
                     {stat.backfill}
                   </Badge>
                 </div>
